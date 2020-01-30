@@ -1,0 +1,13 @@
+.card {
+	display: inline-block;
+	margin: 10px;
+}
+
+.timeline-item-1 {
+	border-left: 3px solid white;
+	border-bottom: 3px solid white;
+}
+.timeline-item-2 {
+	border-right: 3px solid white;
+	border-bottom: 3px solid white;
+}
