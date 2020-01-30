@@ -13,50 +13,50 @@ const list = [
 		'218620',
 		'49520'
 	],
-	[
-		'2008',
-		'218620',
-		'49520'
-	],
-	[
-		'2009',
-		'218620',
-		'49520'
-	],
-	[
-		'2010',
-		'218620',
-		'49520'
-	],
-	[
-		'2012',
-		'218620',
-		'49520'
-	],
-	[
-		'2013',
-		'218620',
-		'49520'
-	],
-	[
-		'2014',
-		'218620',
-		'49520'
-	],
-	[
-		'2015',
-		'218620',
-		'49520'
-	],
-	[
-		'2016',
-		'218620',
-		'49520'
-	],
+//	[
+//		'2008',
+//		'218620',
+//		'49520'
+//	],
+//	[
+//		'2009',
+//		'218620',
+//		'49520'
+//	],
+//	[
+//		'2010',
+//		'218620',
+//		'49520'
+//	],
+//	[
+//		'2012',
+//		'218620',
+//		'49520'
+//	],
+//	[
+//		'2013',
+//		'218620',
+//		'49520'
+//	],
+//	[
+//		'2014',
+//		'218620',
+//		'49520'
+//	],
+//	[
+//		'2015',
+//		'218620',
+//		'49520'
+//	],
+//	[
+//		'2016',
+//		'218620',
+//		'49520'
+//	],
 ];
 const create = React.createElement;
-const steamAPI_url = 'https://store.steampowered.com/api/appdetails?appids='
-const header = {'Content-Type': 'application/json'}
+const steamAPI_url = 'https://cors-anywhere.herokuapp.com/https://store.steampowered.com/api/appdetails?appids='
+const header = {}
 
 class Timeline extends React.Component {
 	render(){
@@ -75,31 +75,44 @@ class Timeline extends React.Component {
 class Container extends React.Component {
 	constructor(props) {
     super(props);
+	this.getSteamAppInfo()
 	}
 	
-	getSteamAppInfo(GameID){
-		fetch(steamAPI_url + GameID, {
-			method:'GET',
-			headers: header,
-		  }).then(results => {
-			return results.json()
-		  }).then(data => {
-			const data_list = data.map(c => {
-			  return{
-				type: c.GameID.data.type
-			  };
-			});
-			const newState = Object.assign({}, this.state, {
-				 [GameID]: data_list
-		   });
-		   this.setState(newState);
-		  })
-		  .catch(error => console.log(error));
-	}
 	
+	async getSteamAppInfo(){
+		var GameID
+		var data_list
+		var games = [];
+		for(var year in list){
+			for(var GameID in list[year]){
+				if(GameID != 0){
+					console.log(list[year][GameID]);
+					const response = await fetch(steamAPI_url + list[year][GameID]);
+					const json =  await response.json().then(data => {
+						  console.log(data)
+						const data_list = {
+							name: data[list[year][GameID]].data.name,
+							description: data[list[year][GameID]].data.detailed_description
+						}
+						for (var screen in data[list[year][GameID]].data.screenshots) {
+						data_list[screen] = data[list[year][GameID]].data.screenshots[screen].path_full
+						}
+						console.log(data_list);
+						games.push(data_list)
+					  })
+					  .catch(error => console.log(error));
+				}
+			}
+		}
+					console.log(games);
+					this.setState({games: games});
+	}
 	render(){
-		this.getSteamAppInfo('218620')
-		return(create('div',null,create(Timeline)));
+		var r = create('div')
+		if(this.state != null){
+			r = create('div',null,create(Timeline,{games: this.state.games}));
+		}
+		return(r)
 	}
 }
 
