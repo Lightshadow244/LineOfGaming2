@@ -237,7 +237,11 @@ class Container extends React.Component {
 	render(){
 		var r = create('div')
 		if(this.state != null){
-			r = create('div',null,create(Timeline,{allGames: this.state.allGames}));
+			r = create('div',null,
+				create(Timeline,{allGames: this.state.allGames}),
+				create('div',{className:'navbar navbar-expand-lg fixed-top navbar-dark bg-primary'},
+					create('h4',{className:'mb-0'},'Gaming-Timeline'))
+			);
 		};
 		return(r);
 	};
