@@ -1,7 +1,4 @@
-.card {
-	display: inline-block;
-	margin: 10px;
-}
+
 
 .timeline-item-1 {
 	border-left: 3px solid white;
@@ -10,4 +7,19 @@
 .timeline-item-2 {
 	border-right: 3px solid white;
 	border-bottom: 3px solid white;
+}
+.yearLeft {
+	position:relative;
+	left: -9%;
+}
+
+.yearRight{
+	position:relative;
+	left: 101%;
+}
+
+.gameInfo {
+	left:20%;
+	top:51px;
+	z-index: 1;
 }
