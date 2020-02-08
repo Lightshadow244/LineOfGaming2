@@ -2,54 +2,68 @@
 const list = [
 	[
 		'2006',
-		'218620',
-		'49520'
+		'4880',
+		'12320'
 	],
 	[
-		'2007',
-		'218620',
-		'49520'
+		'2008',
+		'225640',
 	],
-//	[
-//		'2008',
-//		'218620',
-//		'49520'
-//	],
-//	[
-//		'2009',
-//		'218620',
-//		'49520'
-//	],
-//	[
-//		'2010',
-//		'218620',
-//		'49520'
-//	],
-//	[
-//		'2012',
-//		'218620',
-//		'49520'
-//	],
-//	[
-//		'2013',
-//		'218620',
-//		'49520'
-//	],
-//	[
-//		'2014',
-//		'218620',
-//		'49520'
-//	],
-//	[
-//		'2015',
-//		'218620',
-//		'49520'
-//	],
-//	[
-//		'2016',
-//		'218620',
-//		'49520'
-//	],
+	[
+		'2009',
+		'8980',
+	],
+	[
+		'2010',
+		'40800',
+		'15100',
+		'33230',
+	],
+	[
+		'2011',
+		'48190',
+		'238960',
+		'489830',
+	],
+	[
+		'2012',
+		'49520',
+	],
+	[
+		'2013',
+		'251470',
+		'214730',
+	],
+	[
+		'2014',
+		'256290',
+	],
+	[
+		'2015',
+		'261570',
+		'292030',
+	],
+	[
+		'2016',
+		'374320',
+	],
+	[
+		'2017',
+		'578080',
+	],
+	[
+		'2018',
+		'294100',
+	],
+	[
+		'2019',
+		'333420',
+	],
+	[
+		'2020',
+		'594650',
+	],
+
 ];
 const create = React.createElement;
 const steamAPI_url = 'https://cors-anywhere.herokuapp.com/https://store.steampowered.com/api/appdetails?appids=';
@@ -60,7 +74,7 @@ class GameInfo extends React.Component {
 		super(props);
 		this.state={screenCounter:0};
 	};
-	
+
 	componentDidMount() {
 		setInterval(() => {
 			//console.log(this.props.screens.length -1)
@@ -71,16 +85,16 @@ class GameInfo extends React.Component {
 				};
 		}, 5000);
 	};
-	
+
 	render(){
 		var info = create('div');
 		if(this.props.showInfo == true){
 			info = create('div',{className:'container bg-secondary position-fixed gameInfo '},
 				create('button', {className:'close'},'x'),
-				create('h1',{className:'container'},	
+				create('h1',{className:'container'},
 					this.props.game.name
 				),
-				create('div',{className:'container'}, 
+				create('div',{className:'container'},
 					create(Slider2, {screens:this.props.game.screens, screenCounter:this.state.screenCounter})
 				),
 				create('div',{className:'container overflow-auto mt-2 mb-2'},this.props.game.description)
@@ -101,11 +115,11 @@ class GameCard extends React.Component {
 		super(props);
 		this.state={screenCounter:0,showInfo:false};
 	};
-	
+
 	changeInfoStatus(){
 		this.setState({showInfo:!this.state.showInfo});
 	};
-	
+
 	componentDidMount() {
 		setInterval(() => {
 			//console.log(this.props.screens.length -1)
@@ -118,7 +132,7 @@ class GameCard extends React.Component {
 			};
 		}, 3000);
 	};
-	
+
 	render(){
 		return(
 			create('div',{className: "card text-white bg-primary mb-3 w-25 h-100", onClick:() => {this.changeInfoStatus()}},
@@ -128,8 +142,8 @@ class GameCard extends React.Component {
 			)
 		);
 	};
-	
-	
+
+
 };
 
 class GameCardGroup extends React.Component {
@@ -137,11 +151,11 @@ class GameCardGroup extends React.Component {
 		super(props);
 	};
 
-	
+
 	render(){
 		var group
 		var gameCardList = []
-		
+
 		for(var game in this.props.gamePerYear){
 			if(game != 0){
 				gameCardList.push(
@@ -149,17 +163,17 @@ class GameCardGroup extends React.Component {
 				);
 			};
 		};
-		
+
 		//console.log('itemNumber: ' + this.props.itemNumber)
 		if(this.props.itemNumber % 2 === 0){
 			group = create('div', {className: 'row'},
 					create('h2', {className: 'yearLeft mb-auto mt-auto'}, this.props.gamePerYear[0]),
-					gameCardList, 
+					gameCardList,
 				);
 		}else{
 			group = create('div', {className: 'row'},
 					create('h2', {className: 'yearRight mb-auto mt-auto'}, this.props.gamePerYear[0]),
-					gameCardList, 
+					gameCardList,
 				);
 		};
 		return(group);
@@ -170,17 +184,17 @@ class Timeline extends React.Component {
 	constructor(props) {
     super(props);
 	};
-	
+
 	render(){
 		var timeline = [];
-			
+
 		for (var item in this.props.allGames){
 			if(item % 2 === 0){
 				timeline.push(
 					create('div',{className: 'container bg-primary timeline-item-1',},
 						create(GameCardGroup,{gamePerYear:this.props.allGames[item],itemNumber: item})
 					)
-				); 
+				);
 			}else{
 				timeline.push(
 					create('div',{className: 'container bg-primary timeline-item-2'},
@@ -189,7 +203,7 @@ class Timeline extends React.Component {
 				)
 			};
 		};
-		
+
 		return(timeline);
 	}
 }
@@ -200,8 +214,8 @@ class Container extends React.Component {
 		super(props);
 		this.getSteamAppInfo()
 	};
-	
-	
+
+
 	async getSteamAppInfo(){
 		var GameID;
 		var data_list;
@@ -242,6 +256,10 @@ class Container extends React.Component {
 				create('div',{className:'navbar navbar-expand-lg fixed-top navbar-dark bg-primary'},
 					create('h4',{className:'mb-0'},'Gaming-Timeline'))
 			);
+		}else{
+			r = create('div', {className:'container m-auto'},
+				create('h1',{className:'text-muted text-center'},'Loading...')
+			)
 		};
 		return(r);
 	};
