@@ -54,6 +54,7 @@ const list = [
 	[
 		'2018',
 		'294100',
+		'378540',
 	],
 	[
 		'2019',
@@ -69,6 +70,7 @@ const create = React.createElement;
 const steamAPI_url = 'https://cors-anywhere.herokuapp.com/https://store.steampowered.com/api/appdetails?appids=';
 const header = {};
 
+//creates the game info. The game info is also a part of the game card, so if you click anywhere on the info it will close the info.
 class GameInfo extends React.Component {
 	constructor(props) {
 		super(props);
@@ -104,22 +106,24 @@ class GameInfo extends React.Component {
 	};
 };
 
+//returns just a picture which is given.
 class Slider2 extends React.Component {
 	render(){
 		return(create('img',{className: 'img-fluid', src:this.props.screens[this.props.screenCounter]}))
 	};
 };
 
+//creates the card for every game.
 class GameCard extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state={screenCounter:0,showInfo:false};
 	};
-
+	//invert if the info is shown or not when you click on the card.
 	changeInfoStatus(){
 		this.setState({showInfo:!this.state.showInfo});
 	};
-
+	//let the slider randomly show the next picture
 	componentDidMount() {
 		setInterval(() => {
 			//console.log(this.props.screens.length -1)
@@ -146,6 +150,7 @@ class GameCard extends React.Component {
 
 };
 
+//creates a game-card-group for every year and the year for every year-block
 class GameCardGroup extends React.Component {
 	constructor(props) {
 		super(props);
@@ -180,6 +185,7 @@ class GameCardGroup extends React.Component {
 	};
 };
 
+//creates every Timeline-block with the corresponding css class, so it looks like a white line is circling around the years to the bottom.
 class Timeline extends React.Component {
 	constructor(props) {
     super(props);
@@ -208,7 +214,7 @@ class Timeline extends React.Component {
 	}
 }
 
-
+// Main container. Contains the bar on the top and the whole timeline. Also contains a the mechanism to show loading, if not everything is fetched from steam.
 class Container extends React.Component {
 	constructor(props) {
 		super(props);
@@ -224,20 +230,16 @@ class Container extends React.Component {
 			var games = [list[year][0],];
 			for(var GameID in list[year]){
 				if(GameID != 0){
-					//console.log(list[year][GameID]);
 					const response = await fetch(steamAPI_url + list[year][GameID]);
 					const json =  await response.json().then(data => {
-						  //console.log(data)
 						const data_list = {
 							name: data[list[year][GameID]].data.name,
 							description: data[list[year][GameID]].data.short_description,
 							screens: []
 						}
 						for (var screen in data[list[year][GameID]].data.screenshots) {
-						//data_list[screen] = data[list[year][GameID]].data.screenshots[screen].path_full
 						data_list.screens.push(data[list[year][GameID]].data.screenshots[screen].path_full)
 						}
-						//console.log(data_list);
 						games.push(data_list)
 					  })
 					  .catch(error => console.log(error));
@@ -245,7 +247,6 @@ class Container extends React.Component {
 			};
 			allGames.push(games)
 		};
-					//console.log(allGames);
 					this.setState({allGames: allGames});
 	};
 	render(){
