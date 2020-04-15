@@ -125,10 +125,30 @@ class GameCard extends React.Component {
 	};
 	//let the slider randomly show the next picture
 	componentDidMount() {
+
+		fetch(steamAPI_url + this.props.game_nr, {
+            method:'GET',
+            headers: {}
+          }).then(results => {
+            return results.json()
+          }).then(data => {
+						const data_list = {
+							name: data[this.props.game_nr].data.name,
+							description: data[this.props.game_nr].data.short_description,
+							screens: []
+						}
+						for (var screen in data[this.props.game_nr].data.screenshots) {
+							data_list.screens.push(data[this.props.game_nr].data.screenshots[screen].path_full)
+						}
+
+           	this.setState({game: data_list});
+          })
+          .catch(error => console.log(error));
+
 		setInterval(() => {
 			//console.log(this.props.screens.length -1)
 			if(Math.floor(Math.random() * 10) < 4){
-				if(this.props.game.screens.length -1 == this.state.screenCounter){
+				if(this.state.game.screens.length -1 == this.state.screenCounter){
 					this.setState({screenCounter: 0})
 				}else{
 					this.setState({screenCounter: this.state.screenCounter + 1})
@@ -138,13 +158,18 @@ class GameCard extends React.Component {
 	};
 
 	render(){
-		return(
-			create('div',{className: "card text-white bg-primary mb-3 w-25 h-100", onClick:() => {this.changeInfoStatus()}},
-				create('div', {className: 'card-header'},this.props.game.name),
-				create(Slider2, {screens:this.props.game.screens, screenCounter:this.state.screenCounter}),
-				create(GameInfo,{game:this.props.game, showInfo:this.state.showInfo})
+		var r;
+		if(this.state.game !== undefined){
+			r = create('div',{className: "card text-white bg-primary mb-3 w-25 h-100", onClick:() => {this.changeInfoStatus()}},
+				create('div', {className: 'card-header'},this.state.game.name),
+				create(Slider2, {screens:this.state.game.screens, screenCounter:this.state.screenCounter}),
+				create(GameInfo,{game:this.state.game, showInfo:this.state.showInfo})
 			)
-		);
+		}else{
+			r = create('div',{className: "card text-white bg-primary mb-3 w-25 h-100",},
+						create('div', {className: 'card-header'},'Loading...'))
+		};
+		return(r);
 	};
 
 
@@ -164,7 +189,7 @@ class GameCardGroup extends React.Component {
 		for(var game in this.props.gamePerYear){
 			if(game != 0){
 				gameCardList.push(
-					create(GameCard, {game:this.props.gamePerYear[game]})
+					create(GameCard, {game_nr:this.props.gamePerYear[game]})
 				);
 			};
 		};
@@ -194,17 +219,17 @@ class Timeline extends React.Component {
 	render(){
 		var timeline = [];
 
-		for (var item in this.props.allGames){
+		for (var item in list){
 			if(item % 2 === 0){
 				timeline.push(
 					create('div',{className: 'container bg-primary timeline-item-1',},
-						create(GameCardGroup,{gamePerYear:this.props.allGames[item],itemNumber: item})
+						create(GameCardGroup,{gamePerYear:list[item],itemNumber: item})
 					)
 				);
 			}else{
 				timeline.push(
 					create('div',{className: 'container bg-primary timeline-item-2'},
-						create(GameCardGroup,{gamePerYear:this.props.allGames[item], itemNumber: item})
+						create(GameCardGroup,{gamePerYear:list[item], itemNumber: item})
 					)
 				)
 			};
@@ -218,50 +243,18 @@ class Timeline extends React.Component {
 class Container extends React.Component {
 	constructor(props) {
 		super(props);
-		this.getSteamAppInfo()
+		//this.getSteamAppInfo()
 	};
 
 
-	async getSteamAppInfo(){
-		var GameID;
-		var data_list;
-		var allGames = [];
-		for(var year in list){
-			var games = [list[year][0],];
-			for(var GameID in list[year]){
-				if(GameID != 0){
-					const response = await fetch(steamAPI_url + list[year][GameID]);
-					const json =  await response.json().then(data => {
-						const data_list = {
-							name: data[list[year][GameID]].data.name,
-							description: data[list[year][GameID]].data.short_description,
-							screens: []
-						}
-						for (var screen in data[list[year][GameID]].data.screenshots) {
-						data_list.screens.push(data[list[year][GameID]].data.screenshots[screen].path_full)
-						}
-						games.push(data_list)
-					  })
-					  .catch(error => console.log(error));
-				};
-			};
-			allGames.push(games)
-		};
-					this.setState({allGames: allGames});
-	};
+	
 	render(){
-		var r = create('div')
-		if(this.state != null){
-			r = create('div',null,
-				create(Timeline,{allGames: this.state.allGames}),
-				create('div',{className:'navbar navbar-expand-lg fixed-top navbar-dark bg-primary'},
-					create('h4',{className:'mb-0'},'Gaming-Timeline'))
-			);
-		}else{
-			r = create('div', {className:'container m-auto'},
-				create('h1',{className:'text-muted text-center'},'Loading...')
-			)
-		};
+		var r
+		r = create('div',null,
+			create(Timeline,{}),
+			create('div',{className:'navbar navbar-expand-lg fixed-top navbar-dark bg-primary'},
+				create('h4',{className:'mb-0'},'Gaming-Timeline'))
+		);
 		return(r);
 	};
 };
